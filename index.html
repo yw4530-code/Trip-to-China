@@ -1,0 +1,219 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Yutong &amp; Janelle's China Trip</title>
+  <link rel="preconnect" href="https://unpkg.com">
+  <link
+    rel="stylesheet"
+    href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css"
+    crossorigin=""
+  >
+  <link rel="stylesheet" href="style.css">
+</head>
+<body>
+  <div class="app-shell">
+    <button class="sidebar-scrim" id="sidebar-scrim" type="button" aria-label="Close itinerary panel"></button>
+
+    <aside class="trip-sidebar" id="trip-sidebar" aria-label="Trip overview">
+      <div class="sidebar-scroll">
+        <section class="brand-panel">
+          <p class="eyebrow">Interactive route planner</p>
+          <h1>Yutong &amp; Janelle's China Trip</h1>
+          <p class="subtitle">August 10-26, 2026</p>
+          <p class="intro-copy">
+            A first working prototype for route planning, city deep-dives, and landmark tracking across China.
+          </p>
+          <div class="hero-metrics" id="hero-metrics"></div>
+        </section>
+
+        <section class="sidebar-section">
+          <div class="section-heading">
+            <h2>Trip Timeline</h2>
+            <button class="ghost-button" id="overview-button" type="button">China Overview</button>
+          </div>
+          <ol class="timeline-list" id="timeline-list"></ol>
+        </section>
+
+        <section class="sidebar-section">
+          <div class="section-heading">
+            <h2>City Stops</h2>
+            <span class="helper-label">Click to zoom in</span>
+          </div>
+          <div class="city-button-list" id="city-button-list"></div>
+        </section>
+
+        <section class="sidebar-section">
+          <div class="section-heading">
+            <h2>Itinerary Days</h2>
+            <span class="helper-label" id="day-context-label">Beijing &amp; Shanghai</span>
+          </div>
+          <div class="itinerary-day-list" id="itinerary-day-list"></div>
+        </section>
+
+        <section class="sidebar-section">
+          <div class="section-heading">
+            <h2>Filters</h2>
+            <button class="ghost-button" id="reset-filters-button" type="button">Reset Filters</button>
+          </div>
+
+          <form class="filter-form" id="filter-form">
+            <label class="filter-field">
+              <span>City</span>
+              <select id="filter-city"></select>
+            </label>
+
+            <label class="filter-field">
+              <span>Date</span>
+              <select id="filter-date"></select>
+            </label>
+
+            <label class="filter-field">
+              <span>Priority</span>
+              <select id="filter-priority">
+                <option value="all">All priorities</option>
+                <option value="Must See">Must See</option>
+                <option value="High">High</option>
+                <option value="Medium">Medium</option>
+                <option value="Optional">Optional</option>
+              </select>
+            </label>
+
+            <label class="filter-field">
+              <span>Reservation</span>
+              <select id="filter-reservation">
+                <option value="all">All reservation states</option>
+                <option value="Not Required">Not Required</option>
+                <option value="Not Booked">Not Booked</option>
+                <option value="Booked">Booked</option>
+                <option value="Confirmed">Confirmed</option>
+              </select>
+            </label>
+
+            <label class="filter-field">
+              <span>Transportation</span>
+              <select id="filter-mode"></select>
+            </label>
+
+            <label class="filter-field">
+              <span>Category</span>
+              <select id="filter-category"></select>
+            </label>
+
+            <label class="toggle-field">
+              <input type="checkbox" id="filter-booked-only">
+              <span>Show only booked items</span>
+            </label>
+
+            <label class="toggle-field">
+              <input type="checkbox" id="filter-must-see-only">
+              <span>Show only must-see items</span>
+            </label>
+
+            <label class="toggle-field">
+              <input type="checkbox" id="toggle-all-city-landmarks">
+              <span>Show all city landmarks</span>
+            </label>
+          </form>
+        </section>
+
+        <section class="sidebar-section legend-card">
+          <div class="section-heading">
+            <h2>Route Legend</h2>
+            <span class="helper-label">All legs are planning</span>
+          </div>
+          <ul class="legend-list">
+            <li>
+              <span class="legend-swatch train"></span>
+              <div>
+                <strong>Train</strong>
+                <p>Solid route for the Shanghai to Jinan and Jinan to Beijing legs.</p>
+              </div>
+            </li>
+            <li>
+              <span class="legend-swatch flight"></span>
+              <div>
+                <strong>Flight</strong>
+                <p>Dashed route for domestic flights between Beijing, Yunnan, and Shanghai.</p>
+              </div>
+            </li>
+            <li>
+              <span class="legend-swatch planning"></span>
+              <div>
+                <strong>Temporary / Planning</strong>
+                <p>Muted styling indicates placeholder timing and the temporary Yunnan stop in Kunming.</p>
+              </div>
+            </li>
+          </ul>
+        </section>
+
+        <section class="sidebar-section">
+          <div class="section-heading">
+            <h2>Saved Changes</h2>
+            <span class="helper-label">Same browser only</span>
+          </div>
+          <p class="sidebar-copy">
+            Day status, stop priority, reservation tracking, and personal notes are stored locally on this device.
+          </p>
+          <button class="ghost-button full-width" id="reset-saved-changes-button" type="button">
+            Reset Saved Trip Changes
+          </button>
+        </section>
+      </div>
+    </aside>
+
+    <main class="map-stage">
+      <header class="map-toolbar">
+        <button class="menu-toggle" id="menu-toggle" type="button" aria-expanded="false" aria-controls="trip-sidebar">
+          Itinerary
+        </button>
+
+        <div class="toolbar-copy">
+          <p class="eyebrow">Live map view</p>
+          <h2 id="toolbar-title">China Overview</h2>
+          <p id="toolbar-description">Route lines, city zoom, and landmark markers built with Leaflet and static data files.</p>
+        </div>
+
+        <div class="toolbar-actions">
+          <button class="primary-button" id="reset-map-button" type="button">Reset Map</button>
+        </div>
+      </header>
+
+      <section class="map-frame" aria-label="Interactive trip map">
+        <div id="map"></div>
+        <div class="map-overlay">
+          <div class="overlay-card">
+            <span class="overlay-label">Current focus</span>
+            <strong id="selection-chip">China overview</strong>
+          </div>
+        </div>
+      </section>
+    </main>
+
+    <aside class="detail-panel" aria-live="polite">
+      <div class="detail-scroll">
+        <div class="detail-shell">
+          <p class="detail-kicker" id="detail-kicker">Trip snapshot</p>
+          <div id="detail-content"></div>
+        </div>
+      </div>
+    </aside>
+  </div>
+
+  <noscript>
+    <div class="noscript-banner">
+      This prototype needs JavaScript enabled in order to render the interactive China trip map.
+    </div>
+  </noscript>
+
+  <script defer src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js" crossorigin=""></script>
+  <script defer src="data/cities.js"></script>
+  <script defer src="data/routes.js"></script>
+  <script defer src="data/landmarks.js"></script>
+  <script defer src="data/itineraryDays.js"></script>
+  <script defer src="data/itineraryStops.js"></script>
+  <script defer src="data/localRoutes.js"></script>
+  <script defer src="app.js"></script>
+</body>
+</html>
